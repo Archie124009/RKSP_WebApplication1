@@ -16,8 +16,10 @@ namespace WebApplication1.Data
             }
             return instance;
         }
-        public List<Author> _authors = new List<Author>();
+        public List<Product> Products = new List<Product>();
+        public List<Customer> Customers = new List<Customer>();
+        public List<Order> Orders = new List<Order>();
     }
 
 }
-}
+
