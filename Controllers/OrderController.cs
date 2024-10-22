@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using WebApplication1.Data.DTOs;
 using WebApplication1.Data.Models;
 using WebApplication1.Data.Services;
 
@@ -42,7 +41,7 @@ namespace WebApplication1.Controllers
 
         // Добавить новый заказ
         [HttpPost]
-        public async Task<ActionResult<Order>> PostOrder([FromBody] OrderDTO order)
+        public async Task<ActionResult<Order>> PostOrder([FromBody] Order order)
         {
             if (order == null)
             {
@@ -55,7 +54,7 @@ namespace WebApplication1.Controllers
 
         // Обновить заказ
         [HttpPut("{id}")]
-        public async Task<ActionResult<Order>> PutOrder(int id, [FromBody] OrderDTO order)
+        public async Task<ActionResult<Order>> PutOrder(int id, [FromBody] Order order)
         {
             if (id != order.Id)
             {

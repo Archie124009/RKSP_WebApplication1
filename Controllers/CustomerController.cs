@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using WebApplication1.Data.DTOs;
 using WebApplication1.Data.Models;
 using WebApplication1.Data.Services;
 
@@ -42,15 +41,15 @@ namespace WebApplication1.Controllers
 
         // Добавить нового клиента
         [HttpPost]
-        public async Task<ActionResult<Customer>> PostCustomer([FromBody] CustomerDTO customerDTO)
+        public async Task<ActionResult<Customer>> PostCustomer([FromBody] Customer customer)
         {
-            var newCustomer = await _customerService.AddCustomer(customerDTO);
+            var newCustomer = await _customerService.AddCustomer(customer);
             return CreatedAtAction(nameof(GetCustomer), new { id = newCustomer.Id }, newCustomer);  // Возвращаем 201 и созданного клиента
         }
 
         // Обновить клиента
         [HttpPut("{id}")]
-        public async Task<ActionResult<Customer>> PutCustomer(int id, [FromBody] CustomerDTO customer)
+        public async Task<ActionResult<Customer>> PutCustomer(int id, [FromBody] Customer customer)
         {
             if (id != customer.Id)
             {

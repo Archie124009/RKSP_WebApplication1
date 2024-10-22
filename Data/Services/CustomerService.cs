@@ -1,68 +1,54 @@
-﻿using Microsoft.EntityFrameworkCore;
-using WebApplication1.Data.DTOs;
-using WebApplication1.Data.Models;
+﻿using WebApplication1.Data.Models;
 
 namespace WebApplication1.Data.Services
 {
     public class CustomerService
     {
-        private readonly EducationContext _context;
-
-        public CustomerService(EducationContext context)
+        // Метод для добавления нового клиента
+        public async Task<Customer> AddCustomer(Customer customer)
         {
-            _context = context;
+            DataSource.GetInstance().Customers.Add(customer);
+            return await Task.FromResult(customer);
         }
 
-        // Добавление нового клиента через DTO
-        public async Task<Customer?> AddCustomer(CustomerDTO customerDto)
-        {
-            var customer = new Customer
-            {
-                FullName = customerDto.FullName,
-                Email = customerDto.Email,
-                Address = customerDto.Address
-            };
-            _context.Customers.Add(customer);
-            await _context.SaveChangesAsync();
-            return customer;
-        }
-
-        // Получение всех клиентов
+        // Метод для получения списка всех клиентов
         public async Task<List<Customer>> GetCustomers()
         {
-            return await _context.Customers.Include(c => c.Orders).ToListAsync();
+            return await Task.FromResult(DataSource.GetInstance().Customers);
         }
 
-        // Получение клиента по ID
+        // Метод для получения клиента по ID
         public async Task<Customer?> GetCustomer(int id)
         {
-            return await _context.Customers.Include(c => c.Orders).FirstOrDefaultAsync(c => c.Id == id);
+            var customer = DataSource.GetInstance().Customers.FirstOrDefault(c => c.Id == id);
+            return await Task.FromResult(customer);
         }
 
-        // Обновление клиента через DTO
-        public async Task<Customer?> UpdateCustomer(CustomerDTO customerDto)
+        // Метод для обновления клиента
+        public async Task<Customer?> UpdateCustomer(Customer newCustomer)
         {
-            var customer = await _context.Customers.FindAsync(customerDto.Id);
-            if (customer == null) return null;
-
-            customer.FullName = customerDto.FullName;
-            customer.Email = customerDto.Email;
-            customer.Address = customerDto.Address;
-            await _context.SaveChangesAsync();
-            return customer;
+            var customer = DataSource.GetInstance().Customers.FirstOrDefault(c => c.Id == newCustomer.Id);
+            if (customer != null)
+            {
+                customer.FullName = newCustomer.FullName;
+                customer.Email = newCustomer.Email;
+                customer.Address = newCustomer.Address;
+                return await Task.FromResult(customer);
+            }
+            return null;
         }
 
-        // Удаление клиента по ID
+        // Метод для удаления клиента
         public async Task<bool> DeleteCustomer(int id)
         {
-            var customer = await _context.Customers.FindAsync(id);
-            if (customer == null) return false;
-
-            _context.Customers.Remove(customer);
-            await _context.SaveChangesAsync();
-            return true;
+            var customer = DataSource.GetInstance().Customers.FirstOrDefault(c => c.Id == id);
+            if (customer != null)
+            {
+                DataSource.GetInstance().Customers.Remove(customer);
+                return await Task.FromResult(true);
+            }
+            return await Task.FromResult(false);
         }
     }
-
 
 }
