@@ -6,10 +6,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-//builder.Services.AddDbContext<EducationContext>();
+builder.Services.AddDbContext<EducationContext>();
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-//builder.Services.AddTransient<AffiliationService>();
-//builder.Services.AddTransient<ArticleService>();
+builder.Services.AddTransient<ProductService>();
+builder.Services.AddTransient<OrderService>();
+builder.Services.AddTransient<CustomerService>();
 builder.Services.AddControllers().AddNewtonsoftJson(options =>
     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
 );

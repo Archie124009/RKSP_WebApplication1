@@ -1,56 +1,68 @@
 ﻿using WebApplication1.Data.Models;
 using Microsoft.EntityFrameworkCore;
+using WebApplication1.Data.DTOs;
 
 namespace WebApplication1.Data.Services
 {
     public class ProductService
     {
-        // Метод для добавления нового товара
-        public async Task<Product> AddProduct(Product product)
+        private readonly EducationContext _context;
+
+        public ProductService(EducationContext context)
         {
-            DataSource.GetInstance().Products.Add(product);
-            return await Task.FromResult(product);  // Возвращаем добавленный товар
+            _context = context;
         }
 
-        // Метод для получения списка всех товаров
+        // Добавление нового товара через DTO
+        public async Task<Product?> AddProduct(ProductDTO productDto)
+        {
+            var product = new Product
+            {
+                Name = productDto.Name,
+                Description = productDto.Description,
+                Price = productDto.Price
+            };
+            _context.Products.Add(product);
+            await _context.SaveChangesAsync();
+            return product;
+        }
+
+        // Получение всех товаров
         public async Task<List<Product>> GetProducts()
         {
-            return await Task.FromResult(DataSource.GetInstance().Products);  // Возвращаем список товаров
+            return await _context.Products.ToListAsync();
         }
 
-        // Метод для получения товара по ID
+        // Получение всех товаров по ID
         public async Task<Product?> GetProduct(int id)
         {
-            var product = DataSource.GetInstance().Products.FirstOrDefault(p => p.Id == id);
-            return await Task.FromResult(product);  // Возвращаем товар или null, если не найден
+            return await _context.Products.Include(p => p.Orders).FirstOrDefaultAsync(p => p.Id == id);
         }
 
-        // Метод для обновления товара
-        public async Task<Product?> UpdateProduct(Product newProduct)
+        // Обновление товара через DTO
+        public async Task<Product?> UpdateProduct(ProductDTO productDto)
         {
-            var product = DataSource.GetInstance().Products.FirstOrDefault(p => p.Id == newProduct.Id);
-            if (product != null)
-            {
-                product.Name = newProduct.Name;
-                product.Description = newProduct.Description;
-                product.Price = newProduct.Price;
-                product.StockQuantity = newProduct.StockQuantity;
-                return await Task.FromResult(product);  // Возвращаем обновленный товар
-            }
-            return null;  // Возвращаем null, если товар не найден
+            var product = await _context.Products.FindAsync(productDto.Id);
+            if (product == null) return null;
+
+            product.Name = productDto.Name;
+            product.Description = productDto.Description;
+            product.Price = productDto.Price;
+            await _context.SaveChangesAsync();
+            return product;
         }
 
-        // Метод для удаления товара
+        // Удаление товара по ID
         public async Task<bool> DeleteProduct(int id)
         {
-            var product = DataSource.GetInstance().Products.FirstOrDefault(p => p.Id == id);
-            if (product != null)
-            {
-                DataSource.GetInstance().Products.Remove(product);
-                return await Task.FromResult(true);  // Возвращаем true при успешном удалении
-            }
-            return await Task.FromResult(false);  // Возвращаем false, если товар не найден
+            var product = await _context.Products.FindAsync(id);
+            if (product == null) return false;
+
+            _context.Products.Remove(product);
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
+
 
 }
