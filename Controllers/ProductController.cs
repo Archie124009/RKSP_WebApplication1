@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using WebApplication1.Data.DTOs;
 using WebApplication1.Data.Models;
 using WebApplication1.Data.Services;
 
@@ -43,7 +42,7 @@ namespace WebApplication1.Controllers
 
         // Добавить новый товар
         [HttpPost]
-        public async Task<ActionResult<Product>> PostProduct([FromBody] ProductDTO product)
+        public async Task<ActionResult<Product>> PostProduct([FromBody] Product product)
         {
             var newProduct = await _productService.AddProduct(product);
             return CreatedAtAction(nameof(GetProduct), new { id = newProduct.Id }, newProduct);  // Возвращаем 201 и созданный товар
@@ -51,7 +50,7 @@ namespace WebApplication1.Controllers
 
         // Обновить товар
         [HttpPut("{id}")]
-        public async Task<ActionResult<Product>> PutProduct(int id, [FromBody] ProductDTO product)
+        public async Task<ActionResult<Product>> PutProduct(int id, [FromBody] Product product)
         {
             if (id != product.Id)
             {
